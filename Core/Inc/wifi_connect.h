@@ -12,6 +12,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdbool.h>
 #define MQTT_TOPIC_SIZE 100
 #define MQTT_PAYLOAD_SIZE 100
 char Uart_data[150];
@@ -33,6 +34,15 @@ typedef enum mqtt_event{
 	MQTT_CONNECTED,
 	MQTT_IS_NOT_CONNECTED
 }mqtt_connection_e;
+typedef struct received_data_info{
+	//bool is_data_sended;
+	char received_uart_data[100];
+	uint16_t current_data_idx;
+	bool is_data_received_start;
+	char received_uart_char_data;
+	bool is_data_first_part_recived_completely;
+	bool tcp_conn_handled;
+}received_data_info_t;
 void read_message(void);
 void mqtthandler(const char * topic,const char * payload);
  mqtt_buffer_t mqttbuffer;
@@ -50,4 +60,6 @@ mqtt_connection_e mqtt_is_connected();
 void send_command_info(const char *cmd);
 void send_string();
 void subscribe_handler(void);
+uint8_t send_cmd_receive_total_response(const char * send_atcmd,uint32_t timeout);
+ void esp8266_rxcallback(void);
 #endif /* INC_WIFI_CONNECT_H_ */

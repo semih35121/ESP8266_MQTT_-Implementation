@@ -36,6 +36,13 @@ extern void mqtthandler(const char * topic,const char * payload);
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if(huart->Instance==USART1)
+	   esp8266_rxcallback();
+
+}
+
 void set_pa8_high(){
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
 }
@@ -112,15 +119,13 @@ connect_broker("5.196.95.208", "1883", "MQTT", "Semih35", keepalive, 0x02);
 HAL_Delay(500);
 setmqttcallback(mqtthandler);
 HAL_Delay(2000);
-uint32_t publistime=HAL_GetTick();
+uint32_t publishtime=HAL_GetTick();
 uint32_t connectionsendpackettime=HAL_GetTick();
 
 
 char transfer_data[123];
 mqtt_publish("espdeneme", "semihdemirli");
 subscribe_handler();
-
- send_string();
  uint8_t sub=1;
   /* USER CODE END 2 */
 
@@ -131,9 +136,9 @@ subscribe_handler();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-if((HAL_GetTick()-publistime)>240000){
+if((HAL_GetTick()-publishtime)>240000){
 	mqtt_publish("espdeneme", "semihdemirli");
-	publistime=HAL_GetTick();
+	publishtime=HAL_GetTick();
 
 
 }
@@ -149,7 +154,7 @@ if((HAL_GetTick()-connectionsendpackettime)>45000){
 }
 if(!sub){
 	subscribe_handler();
-	sub=1;
+	sub++;
 }
 read_message();
 //mqtt_loop();
